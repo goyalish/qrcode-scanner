@@ -1,7 +1,7 @@
 {
   "name": "QR Code Scanner",
   "short_name": "QR Scan",
-  "start_url": "https://evanburg.github.io/qrcode-pwa/",
+  "start_url": "https://goyalish.github.io/qrcode-scanner/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff",

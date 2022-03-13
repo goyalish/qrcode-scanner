@@ -27,22 +27,31 @@ const onsenUI = [
   'https://unpkg.com/onsenui@2.11.2/css/material-design-iconic-font/css/material-design-iconic-font.min.css',
   'https://unpkg.com/onsenui@2.11.2/css/material-design-iconic-font/fonts/Material-Design-Iconic-Font.woff2'
 ];
-const filesToCache = ["capture.js", ...libScripts, ...onsenUI];
+const filesToCache = ["https://goyalish.github.io/qrcode-scanner/", "main.css", "index.html", "capture.js", ...libScripts, ...onsenUI];
+const broadcast = new BroadcastChannel('my-channel');
 
-/** 1 - USE SELF.IMPORTSCRIPTS TO IMPORT THE LIBRARY SCRIPTS **/
-/** 1a - THIS WILL EXPOSE THE qrcode OBJECT IN YOUR SERVICE WORKER CODE **/
-/** RESOURCE - https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts */
+self.importScripts(...libScripts);
 
-/** 2 - CREATE BROADCAST CHANNEL API INSTANCE **/
-/** RESOURCE - https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API */
+const processImage = (data) => {
+  let result = false;
+  try {
+    qrcode.width = data.width;
+    qrcode.height = data.height;
+    qrcode.imagedata = data.imageData;
 
-/** 3 - CREATE BROADCAST CHANNEL ONMESSAGE LISTENER TO PROCESS THE IMG USING THE LIBRARY **/
-/** 3a - YOUR ONMESSAGE LISTENER SHOULD RECEIVE THE IMAGE DATA, IMAGE WIDTH AND IMAGE HEIGHT **/
-/** 3b - THEN SET THE qrcode.width, qrcode.height AND qrcode.imagedata PROPERTIES **/
-/** 3c - THEN CHECK FOR QRCODE DATA BY USING qrcode.process() **/
-/** 3d - IF THIS DOES NOT THROW AN EXCEPTION: SEND THE RESULT BACK TO THE FRONT END TO TRIGGER THE COPY TO CLIPBOARD + TOAST NOTIFICATION **/
-/** RESOURCE - https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API */
-/** RESOURCE - https://github.com/LazarSoft/jsqrcode */
+    result = qrcode.process();
+
+    broadcast.postMessage({ type: 'processImage', result });
+  } catch (e) {
+    // console.error(e);
+  }
+};
+
+broadcast.onmessage = (event) => {
+  if (event.data && event.data.type === 'processImage') {
+    processImage(event.data.data);
+  }
+};
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(cacheName).then(async (cache) => {
