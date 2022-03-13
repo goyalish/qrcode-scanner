@@ -46,7 +46,7 @@ const videoState = {
 videoState.broadcast.onmessage = (event) => {
   if (event && event.data.type === 'processImage' && event.data.result) {
     if (videoState.processImageTimerId) { 
-      clearInterval(processImageTimerId);
+      clearInterval(videoState.processImageTimerId);
     }
     videoState.isReading = false;
 
