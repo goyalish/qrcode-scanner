@@ -198,7 +198,7 @@ const initiateStream = async (opts) => {
     /** clearInterval() **/
     /** setInterval() **/
     if (videoState.processImageTimerId) {
-      clearInterval(processImageTimerId);
+      clearInterval(videoState.processImageTimerId);
     }
     setInterval(processImg, 250);
   } catch (e) {
